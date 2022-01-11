@@ -67,11 +67,6 @@ public class Server : MonoBehaviour
         }
     }
 
-    private void OnIncomingData(ServerClient c, string data)
-    {
-        Debug.Log(c.clientName + " has sent the follwing message : " + data);
-    }
-
     private bool IsConnected(TcpClient c)
     {
         try
@@ -103,7 +98,33 @@ public class Server : MonoBehaviour
         TcpListener listener = (TcpListener)ar.AsyncState;
         startListening();
         // 모두에게 메세지를 보내면, 누군가 연결했다고 말하기
+        Broadcast(clients[clients.Count - 1].clientName + " has connected", clients);
+
     }
+
+    private void OnIncomingData(ServerClient c, string data)
+    {
+        Debug.Log(c.clientName + " has sent the follwing message : " + data);
+    }
+    private void Broadcast(string data, List<ServerClient> cl)
+    {
+        foreach (ServerClient c in cl)
+        {
+            try
+            {
+                StreamWriter writer = new StreamWriter(c.tcp.GetStream());
+                writer.WriteLine(data);
+                writer.Flush();
+            }
+            catch (Exception e)
+            {
+                Debug.Log("Write error : " + e.Message + " to client " + c.clientName);
+                throw;
+            }
+        }
+    }
+
+
 }
 
 public class ServerClient

@@ -80,6 +80,6 @@ public class Client : MonoBehaviour
 
     private void OnIncomingData(string data)
     {
-        throw new NotImplementedException();
+        Debug.Log("Server : " + data);
     }
 }
